@@ -1,6 +1,6 @@
 # prompt-review
 
-Claude Code のスキルとして動作する、AIエージェント対話履歴の分析ツール。
+Claude Code / Codex のスキルとして動作する、AIエージェント対話履歴の分析ツール。
 過去のプロンプトから技術理解度・プロンプティングパターン・AI依存度を推定し、日本語レポートを生成する。
 
 ![コンセプト図: 生成AIの成果物ではなくプロンプトを見ることで、裏側にある意図や認識を指導できるという考え方を示した図。従来の成果物指導との違いを対比している。](image.png)
@@ -15,6 +15,7 @@ Claude Code のスキルとして動作する、AIエージェント対話履歴
 
 | ツール | ログ形式 |
 |--------|---------|
+| Codex | JSONL（`history.jsonl` + `sessions/YYYY/MM/DD/*.jsonl`） |
 | Claude Code（CLI / VS Code拡張） | JSONL（history.jsonl + プロジェクト別セッション） |
 | GitHub Copilot Chat | SQLite（state.vscdb） |
 | Cline | JSON（api_conversation_history.json） |
@@ -24,14 +25,28 @@ Claude Code のスキルとして動作する、AIエージェント対話履歴
 
 ## 使い方
 
+### Claude Code
+
 Claude Code 上で `/prompt-review` を実行する。
 
-```
+```text
 /prompt-review              # 全プロジェクト、過去7日分（デフォルト）
 /prompt-review 30           # 過去30日分
 /prompt-review yonshogen    # 特定プロジェクトのみ
 /prompt-review yonshogen 30 # 特定プロジェクト × 過去30日分
 /prompt-review 0            # 全期間
+```
+
+### Codex
+
+Codex 上では `prompt-review` スキル名を含めて依頼する。
+
+```text
+$prompt-review
+$prompt-review 30
+$prompt-review yonshogen
+$prompt-review yonshogen 30
+$prompt-review 0
 ```
 
 レポートは `reports/prompt-review-YYYY-MM-DD.md` に出力される。
@@ -59,6 +74,17 @@ prompt-review/
 ├── README.md
 ├── reports/                              # 生成されたレポート
 │   └── prompt-review-YYYY-MM-DD.md
+├── .codex/
+│   └── skills/
+│       └── prompt-review/
+│           ├── SKILL.md                  # Codex 用スキル定義
+│           ├── agents/
+│           │   └── openai.yaml           # Codex UIメタデータ
+│           ├── scripts/
+│           │   └── collect.py            # データ収集スクリプト
+│           └── references/
+│               ├── data-sources.md       # ログ保存場所・形式の詳細
+│               └── report-template.md    # レポート構造テンプレート
 └── .claude/
     └── skills/
         └── prompt-review/
@@ -72,6 +98,6 @@ prompt-review/
 
 ## 要件
 
-- Claude Code（CLI または VS Code拡張）
+- Claude Code（CLI または VS Code拡張）または Codex
 - Python 3.10+
 - SQLite3（GitHub Copilot Chat の解析に必要）
