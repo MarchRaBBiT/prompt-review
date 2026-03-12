@@ -21,7 +21,7 @@ description: >
 - 文字列 + 数値 → **プロジェクト名** + **日数フィルタ**（例: `yonshogen 30`）
 - 引数なし → 全プロジェクト横断、過去7日分（デフォルト）
 
-## ステップ1: データ収集（スクリプト実行）
+## ステップ1: データ収集と保持（スクリプト実行）
 
 前処理スクリプト [scripts/collect.py](scripts/collect.py) を実行してデータを収集する。
 このスクリプトは Codex, Claude Code, GitHub Copilot Chat, Cline, Roo Code, Windsurf,
@@ -32,7 +32,7 @@ Antigravity のログを自動検出し、フィルタ済みのJSON を標準出
 `$ARGUMENTS` を解析し、以下のように実行する:
 
 ```bash
-python .codex/skills/prompt-review/scripts/collect.py [OPTIONS] > /tmp/prompt-review-data.json
+python .codex/skills/prompt-review/scripts/collect.py [OPTIONS]
 ```
 
 - 引数なし → オプションなし（デフォルト: 過去7日分）
@@ -43,9 +43,11 @@ python .codex/skills/prompt-review/scripts/collect.py [OPTIONS] > /tmp/prompt-re
 
 **重要**: スクリプトのパスは、現在の作業ディレクトリ配下にある `.codex/skills/prompt-review/scripts/collect.py` を優先する。リポジトリ内スキルとして配置されている前提で扱うこと。
 
-### 出力の読み取り
+### 出力の保持
 
-スクリプト実行後、`/tmp/prompt-review-data.json` を読み込む。
+スクリプト実行後、標準出力に出た JSON 全体をそのまま次の分析ステップで参照する。収集結果には会話履歴全文や `secret_warnings` が含まれるため、**固定名の一時ファイルや共有ディレクトリへ保存しないこと**。
+
+やむを得ず一時保存が必要な環境でも、このスキルの既定手順としては保存しない。別途実装する場合のみ、競合不能なランダム名と所有者限定権限を前提に扱う。
 
 出力JSON構造:
 ```json
@@ -85,7 +87,7 @@ python .codex/skills/prompt-review/scripts/collect.py [OPTIONS] > /tmp/prompt-re
 
 ## ステップ2: 分析
 
-`/tmp/prompt-review-data.json` を読み込んだら、以下の観点で `messages` 配列内のユーザープロンプトを分析する。各観点について**具体的なエビデンス**（実際のプロンプト断片の引用）を必ず含めること。
+ステップ1で得た標準出力 JSON をそのまま参照し、以下の観点で `messages` 配列内のユーザープロンプトを分析する。各観点について**具体的なエビデンス**（実際のプロンプト断片の引用）を必ず含めること。
 
 ### 前処理: プロジェクト別サマリーの作成と短文応答の除外
 
