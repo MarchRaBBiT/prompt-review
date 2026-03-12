@@ -1,0 +1,7 @@
+interface:
+  display_name: "Prompt Review"
+  short_description: "Analyze AI prompt history and generate a Japanese report"
+  default_prompt: "Use $prompt-review to analyze my Codex or Claude prompt history and generate a Japanese review report."
+
+policy:
+  allow_implicit_invocation: true

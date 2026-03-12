@@ -269,6 +269,7 @@ Cline と同じ手順。
 | 日数フィルタ | 引数で指定 | timestamp を現在時刻と比較 |
 
 ### 日数フィルタの適用方法
+- Codex: セッションJSONL内の `timestamp`、history.jsonl の `ts` を現在時刻と比較
 - Claude Code: `timestamp` フィールド（Unix epoch ミリ秒）で比較
 - Cline/Roo Code: `task_metadata.json` のタイムスタンプで比較
 - GitHub Copilot Chat: セッションデータ内のタイムスタンプで比較
